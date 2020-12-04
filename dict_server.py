@@ -21,7 +21,7 @@ Exit - E
 
 from socket import *
 from multiprocessing import Process
-import signal, sys
+import signal, sys, time
 from mysql import Database
 
 # Global vairable
@@ -71,6 +71,22 @@ def do_query(c,data):
         c.send(msg.encode())
 
 
+#history
+def do_history(c,data):
+    name = data.split(' ')[1]
+    r = db.history(name)
+    if not r:
+        c.send(b'Fail')
+    c.send(b'OK')
+    for i in r:
+        # i --> (name,word,time)
+        msg = "%s %-16s %s" % i  # -16 align left, take 16 space
+        time.sleep(0.1)  # avoid bytes sticky while transporting
+        c.send(msg.encode())
+    time.sleep(0.1)
+    c.send(b'##')  #sending end
+
+
 def request(c):
     db.create_cursor()  # child process use own cursor
     while True:
@@ -84,6 +100,8 @@ def request(c):
             do_login(c,data)
         elif data[0] == 'Q':
             do_query(c,data)
+        elif data[0] == 'H':
+            do_history(c,data)
 
 
 

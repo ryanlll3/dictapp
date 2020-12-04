@@ -26,10 +26,24 @@ def do_query(name):
         data = s.recv(2048).decode()
         print(data)
 
+
+# query history
 def do_history(name):
+    msg = "H " + name
+    s.send(msg.encode())
+    data = s.recv(128).decode()
+    if data == 'OK':
+        while True:
+            data = s.recv(1024).decode()
+            if data == '##':
+                break
+            print(data)
+    else:
+        print('NO history found for you.')
 
 
-# 2nd level screen
+
+# 2nd level login operation
 
 def login(name):
     while True:

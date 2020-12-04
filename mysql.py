@@ -93,6 +93,13 @@ class Database:
             self.db.rollback()
             print(e)
 
+    def history(self,name):
+        sql = "select name,word,time from hist \
+        where name = '%s' order by time desc \
+        limit 10" % name
+        self.cur.execute(sql)
+        return self.cur.fetchall()
+
 
 """
 create table user (name varchar(32) primary key,passwd varchar(8) not null);
